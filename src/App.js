@@ -1,3 +1,4 @@
+// Import necessary components and icons
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { Avatar, Layout, Menu, Dropdown, message } from 'antd';
@@ -10,7 +11,7 @@ import Tasks from './Pages/Tasks'; // Imported Tasks component
 import { useAuth } from './Components/Contexts/AuthContext';
 import { signOutUser } from './Firebase/auth';
 
-const { Header, Sider, Footer } = Layout;
+const { Header, Footer } = Layout;
 
 const App = () => {
   const { user, loading } = useAuth();
@@ -51,40 +52,33 @@ const App = () => {
     <Router>
       <Layout style={{ minHeight: '100vh' }}>
         <Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div className="logo" />
-          <h1 style={{ color: 'white', marginLeft: '24px' }}>Faire</h1>
+          <Link to="/">
+            <div style={{ display: 'flex', alignItems: 'baseline' }}>
+              {/* <div className="logo" /> */}
+              <HomeOutlined style={{ fontSize: '20px', color: 'white' }} />
+              <h2 style={{ color: 'white', marginLeft: '24px' }}>Faire</h2>
+            </div>
+          </Link>
           {user ? (
-            <Dropdown
-              trigger={['click']}
-              overlay={userMenu}
-              placement="bottomRight"
-            >
-              <div style={{ color: 'white', marginRight: '24px' }}>
-                <Avatar icon={<UserOutlined />} />
-                <span style={{ marginLeft: '8px' }}>{user.displayName}</span>
-              </div>
-            </Dropdown>
+            <div style={{ color: 'white', display: 'flex', alignItems: 'center' }}>
+              <Link to="/tasks" style={{ display: 'flex', alignItems: 'center' }}>
+                <UnorderedListOutlined style={{ fontSize: '20px', color: 'white' }} />
+                <span style={{ color: 'white', marginLeft: '8px' }}>Tasks</span>
+              </Link>
+              <Dropdown
+                trigger={['click']}
+                overlay={userMenu}
+                placement="bottomRight"
+              >
+                <div style={{ color: 'white', marginRight: '20px', display: 'flex', alignItems: 'center' }}>
+                  <Avatar icon={<UserOutlined />} />
+                  <span style={{ marginLeft: '8px' }}>{user.displayName ? user.displayName : (user.email ? user.email.split('@')[0] : "Display name")}</span>
+                </div>
+              </Dropdown>
+            </div>
           ) : null}
         </Header>
         <Layout>
-          {user && (
-            <Sider width={240} style={{ background: '#fff', margin: '2em', width: '80%' }}>
-              <Menu
-                mode="inline"
-                defaultSelectedKeys={['1']}
-                style={{ height: '100%', borderRight: 0 }}
-              >
-                <Menu.Item key="1" icon={<HomeOutlined />}>
-                  <Link to="/">Home</Link>
-                </Menu.Item>
-                {/* Add a menu item for Tasks */}
-                <Menu.Item key="2" icon={<UnorderedListOutlined />}>
-                  <Link to="/tasks">Tasks</Link>
-                </Menu.Item>
-                {/* Add more sidebar menu items as needed */}
-              </Menu>
-            </Sider>
-          )}
           <Routes>
               <Route path="/" element={user ? <Home /> : <Navigate to="/signup" />} />
               <Route path="/signin" element={!user ? <SignIn /> : <Navigate to="/" />} />

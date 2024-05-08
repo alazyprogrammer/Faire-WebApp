@@ -1,8 +1,12 @@
 import axios from 'axios';
 import { auth } from '../Firebase';
+import { getCurrentBaseUrl } from '../utils';
 
 // API base URL
-const BASE_URL = 'http://localhost:3000';
+const PORT = '3000'
+const BASE_URL = getCurrentBaseUrl(PORT);
+console.log('Base Url: ', BASE_URL);
+const API_URL = `${BASE_URL}/tasks`;
 
 // Function to get the current user token
 const getToken = () => {
@@ -20,7 +24,7 @@ export const createTask = async (title, description) => {
     const token = await getToken();
     const currentUser = auth.currentUser;
     const userId = currentUser ? currentUser.uid : '';
-    const response = await axios.post(`${BASE_URL}/tasks/create`, {
+    const response = await axios.post(`${API_URL}/create`, {
       userId,
       title,
       description,
@@ -42,7 +46,7 @@ export const getTasksForUser = async () => {
       const token = await getToken();
       const currentUser = auth.currentUser;
       const userId = currentUser ? currentUser.uid : '';
-      const response = await axios.get(`${BASE_URL}/tasks/user/${userId}`, {
+      const response = await axios.get(`${API_URL}/user/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -59,7 +63,7 @@ export const updateTaskStatus = async (taskId, taskStatus) => {
   try {
     console.log("taskId: ", taskId, " status: ", taskStatus);
     const token = await getToken();
-    const response = await axios.put(`${BASE_URL}/tasks/status`, {
+    const response = await axios.put(`${API_URL}/status`, {
       taskId: taskId,
       status: taskStatus,
     }, {
@@ -79,7 +83,7 @@ export const updateTaskStatus = async (taskId, taskStatus) => {
 export const deleteTask = async (taskId) => {
     try {
       const token = await getToken();
-      const response = await axios.delete(`${BASE_URL}/tasks/${taskId}`, {
+      const response = await axios.delete(`${API_URL}/${taskId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Space, Modal, Form, Input, Select } from 'antd';
-import { SaveOutlined, DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
+import { SaveOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { getTasksForUser, deleteTask, updateTaskStatus, createTask } from '../Services/taskService';
 
 const Tasks = () => {
@@ -62,54 +62,70 @@ const Tasks = () => {
   };
 
   const columns = [
-    { title: 'Title', dataIndex: 'title', key: 'title' },
-    { title: 'Description', dataIndex: 'description', key: 'description' },
-    { title: 'Status', dataIndex: 'status', key: 'status', render: (text, record) => {
-      const longestOption = Math.max("TODO".length, "IN_PROGRESS".length, "DONE".length);
-      const selectWidth = `${longestOption * 2}ch`;
-      return (
-        <Select
-          defaultValue={record.status}
-          style={{ width: selectWidth }}
-          onChange={(value) => setUpdatedStatusMap({ ...updatedStatusMap, [record._id]: value })}
-        >
-          <Option value="TODO">TODO</Option>
-          <Option value="IN_PROGRESS">IN_PROGRESS</Option>
-          <Option value="DONE">DONE</Option>
-        </Select>
-      );
-    }},
-    { title: 'Actions', key: 'actions', render: (text, record) => (
-        <Space>
-          <Button icon={<EyeOutlined />} onClick={() => setSelectedTask(record)} />
-          <Button
-          icon={<SaveOutlined />}
-          disabled={updatedStatusMap[record._id] === undefined || updatedStatusMap[record._id] === record.status}
-          onClick={() => handleUpdateTaskStatus(record._id, updatedStatusMap[record._id])}
-          />
-          <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record._id)} danger />
-        </Space>
+    { 
+      title: 'Title', 
+      dataIndex: 'title', 
+      key: 'title', 
+      render: (text, record) => (
+        <div>
+          <p>{record.title}</p>
+          <Space>
+            <Button
+              icon={<SaveOutlined />}
+              disabled={updatedStatusMap[record._id] === undefined || updatedStatusMap[record._id] === record.status}
+              onClick={() => handleUpdateTaskStatus(record._id, updatedStatusMap[record._id])}
+            />
+            <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record._id)} danger />
+          </Space>
+        </div>
       ),
+      width: 200 // Set a fixed width for the column
+    },
+    { 
+      title: 'Description', 
+      dataIndex: 'description', 
+      key: 'description', 
+      width: 300 // Set a fixed width for the column
+    },
+    { 
+      title: 'Status', 
+      dataIndex: 'status', 
+      key: 'status', 
+      render: (text, record) => {
+        return (
+          <Select
+            defaultValue={record.status}
+            onChange={(value) => setUpdatedStatusMap({ ...updatedStatusMap, [record._id]: value })}
+          >
+            <Option value="TODO">TODO</Option>
+            <Option value="IN_PROGRESS">IN_PROGRESS</Option>
+            <Option value="DONE">DONE</Option>
+          </Select>
+        );
+      },
+      width: 150 // Set a fixed width for the column
     },
   ];
-
+  
+  
   useEffect(() => {
     fetchTasks();
   }, []);
 
   return (
-    <div style={{ margin: '2em', width: '100%' }}>
+    <div style={{ margin: '2em' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1em' }}>
         <h2>Tasks</h2>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setNewTaskModalVisible(true)}>New Task</Button>
       </div>
-      <Table
-        dataSource={tasks}
-        columns={columns}
-        loading={loading}
-        rowKey="_id"
-        style={{ width: '100%' }}
-      />
+      <div style={{ overflowX: 'auto' }}> {/* Added overflow-x style */}
+        <Table
+          dataSource={tasks}
+          columns={columns}
+          loading={loading}
+          rowKey="_id"
+        />
+      </div>
       <Modal
         title="New Task"
         visible={newTaskModalVisible}
